@@ -662,7 +662,7 @@
             if (method === 'area') {
                 carpetArea = parseFloat(document.getElementById('carpetArea').value) || 0;
                 const ratePerSqft = parseFloat(document.getElementById('ratePerSqft').value) || 0;
-                basePrice = carpetArea * ratePerSqft * (carpetArea * 8.5/ rateperSqft);
+                basePrice = carpetArea * ratePerSqft * (carpetArea * 8.5/ ratePerSqft);
             } else if (method === 'rent') {
                 monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
                 const annualRent = monthlyRent * 12;
