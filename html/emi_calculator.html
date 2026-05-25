@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium EMI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #1e1b4b;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(249, 115, 22, 0.12) 0px, transparent 50%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Blobs for Fancy Depth */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            filter: blur(120px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+        body::before { top: 15%; left: 10%; background: #8b5cf6; }
+        body::after { bottom: 20%; right: 10%; background: #f97316; }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glassmorphism Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(15, 12, 41, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 24px 50px rgba(15, 12, 41, 0.6);
+        }
+
+        .card-title {
+            font-size: 1.35rem;
+            color: #111827;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(249, 115, 22, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .card-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: #f97316;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            background: #f9fafb;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f97316;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+        }
+
+        /* Luxury Range Sliders */
+        .slider-container {
+            margin-bottom: 25px;
+        }
+
+        .slider-container label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .slider-container label span {
+            color: #f97316;
+            font-weight: 700;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 10px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #f97316;
+            cursor: pointer;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            background: #ea580c;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Fancy Metallic Gradient Result Card */
+        .result-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #31105f 50%, #f97316 150%);
+            color: #ffffff;
+            border-radius: 24px;
+            padding: 30px;
+            margin-top: 25px;
+            box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 80%);
+            pointer-events: none;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-align: center;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .emi-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .emi-amount {
+            font-size: 3.4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to bottom, #ffffff, #ffe0cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .emi-label {
+            font-size: 0.95rem;
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 16px 10px;
+            border-radius: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.3s;
+        }
+
+        .summary-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .summary-item .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .summary-item .label {
+            font-size: 0.75rem;
+            opacity: 0.75;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Glassmorphic Animated Button */
+        .btn-calculate {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f97316 0%, #8b5cf6 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.45);
+            filter: brightness(1.1);
+        }
+
+        /* Modern Table Custom Styling */
+        .table-container {
+            max-height: 915px;
+            overflow-y: auto;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Custom Scrollbar for Luxury Feel */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 16px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 16px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .amortization-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .amortization-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .amortization-table th {
+            background: #1e1b4b;
+            color: #ffffff;
+            padding: 16px 12px;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #8b5cf6;
+        }
+
+        .amortization-table td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid #f3f4f6;
+            color: #111827;
+        }
+
+        .amortization-table tbody tr:nth-child(even) {
+            background: #fbfbfe;
+        }
+
+        .amortization-table tbody tr:hover {
+            background: #f5f3ff;
+        }
+
+        .amortization-table td:nth-child(2),
+        .amortization-table td:nth-child(5) {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .amortization-table td:nth-child(3) {
+            color: #22c55e; /* Success Green */
+            font-weight: 700;
+        }
+
+        .amortization-table td:nth-child(4) {
+            color: #f97316; /* Primary Orange */
+            font-weight: 700;
+        }
+
+        /* Highlight styles for the new On Close Column */
+        .amortization-table td:nth-child(6) {
+            color: #8b5cf6; /* Accent Purple */
+            font-weight: 700;
+        }
+
+        .year-header {
+            background: #f0fdf4 !important;
+        }
+
+        .year-header td {
+            padding: 12px 20px;
+            text-align: left;
+            color: #1e1b4b !important;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* Navigation Toggles */
+        .toggle-view {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .toggle-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            color: #4b5563;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+        }
+
+        .toggle-btn.active {
+            background: #ffffff;
+            color: #1e1b4b;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: #f97316;
+        }
+
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Premium EMI Dashboard</h1>
+            <p>Calculate luxury installments & analyze your detailed amortization roadmap</p>
+        </div>
+
+        <div class="main-grid">
+            <div>
+                <div class="card">
+                    <div class="card-title">
+                        <span>📋</span> Loan Parameterization
+                    </div>
+
+                    <div class="input-group">
+                        <label>Loan Principal (₹)</label>
+                        <input type="number" id="loanAmount" value="5000000" min="10000" step="10000" onchange="updateLoan('loanSlider', this.value)">
+                    </div>
+
+                    <div class="slider-container">
+                        <label>Principal Target: <span id="loanDisplay">₹ 50,00,000</span></label>
+                        <input type="range" id="loanSlider" min="100000" max="100000000" value="5000000" step="100000" oninput="updateLoan('loanAmount', this.value)">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Interest Rate (% P.A.)</label>
+                        <input type="number" id="interestRate" value="8.5" min="1" max="30" step="0.1" onchange="updateRate('rateSlider', this.value)">
+                    </div>
+
+                    <div class="slider-container">
+                        <label>Interest Yield: <span id="rateDisplay">8.5%</span></label>
+                        <input type="range" id="rateSlider" min="1" max="20" value="8.5" step="0.1" oninput="updateRate('interestRate', this.value)">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Duration Tenure (Years)</label>
+                        <input type="number" id="loanTenure" value="20" min="1" max="40" onchange="updateTenure('tenureSlider', this.value)">
+                    </div>
+
+                    <div class="slider-container">
+                        <label>Term Horizon: <span id="tenureDisplay">20 Years</span></label>
+                        <input type="range" id="tenureSlider" min="1" max="40" value="20" oninput="updateTenure('loanTenure', this.value)">
+                    </div>
+
+                    <button class="btn-calculate" onclick="calculateEMI()">🔄 Recalculate Quote</button>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-title">Calculated Installment</div>
+                    <div class="emi-display">
+                        <div class="emi-amount" id="emiAmount">₹ 43,391</div>
+                        <div class="emi-label">Equated Monthly Value</div>
+                    </div>
+
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="value" id="totalPayment">₹ 1.04 Cr</div>
+                            <div class="label">Gross Outflow</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="value" id="totalInterest">₹ 54.1 L</div>
+                            <div class="label">Aggregate Interest</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="value" id="principalPercent">48%</div>
+                            <div class="label">Principal Ratio</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="value" id="interestPercent">52%</div>
+                            <div class="label">Interest Ratio</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-section">
+                <div class="card">
+                    <div class="card-title">
+                        <span>📊</span> Amortization Roadmap Ledger
+                    </div>
+
+                    <div class="toggle-view">
+                        <button class="toggle-btn active" onclick="toggleView('monthly')">Monthly</button>
+                        <button class="toggle-btn" onclick="toggleView('yearly')">Yearly</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="amortization-table">
+                            <thead>
+                                <tr>
+                                    <th>Timeline</th>
+                                    <th>Installment (EMI)</th>
+                                    <th>Principal</th>
+                                    <th>Interest</th>
+                                    <th>Remaining Principal</th>
+                                    <th>On Close</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amortizationBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'monthly';
+
+        function formatCurrency(num) {
+            if (num >= 10000000) {
+                return '₹ ' + (num / 10000000).toFixed(2) + ' Cr';
+            } else if (num >= 100000) {
+                return '₹ ' + (num / 100000).toFixed(1) + ' L';
+            } else {
+                return '₹ ' + Math.round(num).toLocaleString('en-IN');
+            }
+        }
+
+        function formatFull(num) {
+            return '₹ ' + Math.round(num).toLocaleString('en-IN');
+        }
+
+        function updateLoan(id, val) {
+            document.getElementById(id).value = val;
+            document.getElementById('loanDisplay').textContent = '₹ ' + parseInt(val).toLocaleString('en-IN');
+            calculateEMI();
+        }
+
+        function updateRate(id, val) {
+            document.getElementById(id).value = val;
+            document.getElementById('rateDisplay').textContent = val + '%';
+            calculateEMI();
+        }
+
+        function updateTenure(id, val) {
+            document.getElementById(id).value = val;
+            document.getElementById('tenureDisplay').textContent = val + ' Years';
+            calculateEMI();
+        }
+
+        function toggleView(view) {
+            currentView = view;
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            calculateEMI();
+        }
+
+        function calculateEMI() {
+            const P = parseFloat(document.getElementById('loanAmount').value) || 0;
+            const annualRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const years = parseInt(document.getElementById('loanTenure').value) || 0;
+
+            const r = annualRate / 12 / 100;
+            const n = years * 12;
+
+            let emi;
+            if (r === 0) {
+                emi = P / n;
+            } else {
+                emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            }
+
+            const totalPayment = emi * n;
+            const totalInterest = totalPayment - P;
+
+            document.getElementById('emiAmount').textContent = formatFull(emi);
+            document.getElementById('totalPayment').textContent = formatCurrency(totalPayment);
+            document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+
+            const principalPercent = ((P / totalPayment) * 100).toFixed(1);
+            const interestPercent = ((totalInterest / totalPayment) * 100).toFixed(1);
+
+            document.getElementById('principalPercent').textContent = principalPercent + '%';
+            document.getElementById('interestPercent').textContent = interestPercent + '%';
+
+            generateSchedule(P, r, n, emi, years, totalInterest);
+        }
+
+        function generateSchedule(P, r, n, emi, years, totalInterest) {
+            let balance = P;
+            let totalPrincipalPaid = 0;
+            let totalInterestPaid = 0;
+
+            const tbody = document.getElementById('amortizationBody');
+            tbody.innerHTML = '';
+
+            const schedule = [];
+
+            for (let month = 1; month <= n; month++) {
+                const interestForMonth = balance * r;
+                const principalForMonth = emi - interestForMonth;
+                balance -= principalForMonth;
+
+                if (balance < 0) balance = 0;
+
+                totalPrincipalPaid += principalForMonth;
+                totalInterestPaid += interestForMonth;
+
+                const principalPercent = ((principalForMonth / emi) * 100).toFixed(1);
+                const interestPercent = ((interestForMonth / emi) * 100).toFixed(1);
+
+                schedule.push({
+                    month,
+                    year: Math.ceil(month / 12),
+                    emi,
+                    principal: principalForMonth,
+                    interest: interestForMonth,
+                    principalPercent,
+                    interestPercent,
+                    balance
+                });
+            }
+
+            if (currentView === 'monthly') {
+                let currentYear = 0;
+
+                schedule.forEach((row, index) => {
+                    if (row.year !== currentYear) {
+                        currentYear = row.year;
+                        const yearRow = document.createElement('tr');
+                        yearRow.className = 'year-header';
+                        yearRow.innerHTML = `<td colspan="6">📅 Calendar Year ${currentYear}</td>`;
+                        tbody.appendChild(yearRow);
+                    }
+
+                    // Calculation: balance + emi * month
+                    const onCloseValue = row.balance + (emi * row.month);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>Month ${row.month}</td>
+                        <td>${formatFull(row.emi)}</td>
+                        <td>${formatFull(row.principal)}</td>
+                        <td>${formatFull(row.interest)}</td>
+                        <td>${formatFull(row.balance)}</td>
+                        <td>${formatFull(onCloseValue)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                const yearlyData = {};
+
+                schedule.forEach(row => {
+                    if (!yearlyData[row.year]) {
+                        yearlyData[row.year] = {
+                            emi: 0,
+                            principal: 0,
+                            interest: 0,
+                            balance: row.balance
+                        };
+                    }
+                    yearlyData[row.year].emi += row.emi;
+                    yearlyData[row.year].principal += row.principal;
+                    yearlyData[row.year].interest += row.interest;
+                    yearlyData[row.year].balance = row.balance;
+                });
+
+                Object.keys(yearlyData).forEach(year => {
+                    const data = yearlyData[year];
+                    
+                    // Calculation: balance + emi * year
+                    // balance at end of year + total cumulative emi payments up to that year
+                    const onCloseValue = data.balance + (emi * 12 * year);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>Year ${year}</strong></td>
+                        <td>${formatFull(data.emi)}</td>
+                        <td>${formatFull(data.principal)}</td>
+                        <td>${formatFull(data.interest)}</td>
+                        <td>${formatFull(data.balance)}</td>
+                        <td>${formatFull(onCloseValue)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // Initialize Engine
+        calculateEMI();
+    </script>
+</body>
+</html>
