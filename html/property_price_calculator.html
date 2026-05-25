@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Flat Price Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+        }
+
+        .checkbox-group label {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .slider-container {
+            margin-bottom: 18px;
+        }
+
+        .slider-container label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .price-display {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .price-main {
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .price-sub {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .breakdown-item {
+            background: rgba(255,255,255,0.15);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .breakdown-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .breakdown-item .label {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+
+        .method-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .method-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .method-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .method-section {
+            display: none;
+        }
+
+        .method-section.active {
+            display: block;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #e8f4fd;
+            color: #1976d2;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tag-good {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .tag-fair {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tag-poor {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Property Flat Price Calculator</h1>
+            <p>Estimate property value using multiple valuation methods</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Input Section -->
+            <div class="card">
+                <div class="card-title">
+                    <span>📋</span> Property Details
+                </div>
+
+                <div class="method-tabs">
+                    <button class="method-tab active" onclick="switchMethod('area')">By Area</button>
+                    <button class="method-tab" onclick="switchMethod('rent')">By Rent</button>
+                    <button class="method-tab" onclick="switchMethod('combined')">Combined</button>
+                </div>
+
+                <!-- Area Method -->
+                <div id="area-section" class="method-section active">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Carpet Area (sq ft)</label>
+                            <input type="number" id="carpetArea" value="800" min="100" onchange="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>Rate per sq ft</label>
+                            <input type="number" id="ratePerSqft" value="5000" min="100" onchange="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Built-up Area (sq ft) <span class="info-badge">Optional</span></label>
+                            <input type="number" id="builtupArea" placeholder="e.g. 950" onchange="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>Super Built-up Area (sq ft) <span class="info-badge">Optional</span></label>
+                            <input type="number" id="superBuiltupArea" placeholder="e.g. 1100" onchange="calculate()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rent Method -->
+                <div id="rent-section" class="method-section">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Monthly Rent (₹)</label>
+                            <input type="number" id="monthlyRent" value="25000" min="1000" onchange="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>Annual Rent Yield (%)</label>
+                            <input type="number" id="rentYield" value="3.5" min="0.5" max="15" step="0.1" onchange="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <label>Market Rent Yield: <span id="yieldDisplay">3.5%</span></label>
+                        <input type="range" id="yieldSlider" min="1" max="10" value="3.5" step="0.1" oninput="updateYield(this.value)">
+                    </div>
+                </div>
+
+                <!-- Combined Method -->
+                <div id="combined-section" class="method-section">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Carpet Area (sq ft)</label>
+                            <input type="number" id="combCarpetArea" value="800" min="100" onchange="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>Monthly Rent (₹)</label>
+                            <input type="number" id="combMonthlyRent" value="25000" min="1000" onchange="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Rate per sq ft (₹)</label>
+                            <input type="number" id="combRatePerSqft" value="5000" min="100" onchange="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>Weight: Area vs Rent</label>
+                            <select id="weightMethod" onchange="calculate()">
+                                <option value="50">50% Area / 50% Rent</option>
+                                <option value="60">60% Area / 40% Rent</option>
+                                <option value="70" selected>70% Area / 30% Rent</option>
+                                <option value="80">80% Area / 20% Rent</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+                <!-- Common Factors -->
+                <div class="card-title">
+                    <span>⚙️</span> Adjustment Factors
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>City Tier</label>
+                        <select id="cityTier" onchange="calculate()">
+                            <option value="metro">Metro (Delhi, Mumbai, etc.)</option>
+                            <option value="tier1">Tier 1 (Pune, Hyderabad, etc.)</option>
+                            <option value="tier2">Tier 2 (Jaipur, Lucknow, etc.)</option>
+                            <option value="tier3">Tier 3 & Others</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Property Age (years)</label>
+                        <input type="number" id="propertyAge" value="5" min="0" max="50" onchange="calculate()">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Floors in Building</label>
+                        <input type="number" id="totalFloors" value="10" min="1" max="100" onchange="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label>Your Floor</label>
+                        <input type="number" id="yourFloor" value="5" min="0" onchange="calculate()">
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="hasLift" checked onchange="calculate()">
+                        <label for="hasLift">Lift/Elevator Available</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="hasParking" checked onchange="calculate()">
+                        <label for="hasParking">Parking Space</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="hasSecurity" checked onchange="calculate()">
+                        <label for="hasSecurity">24/7 Security</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="nearMetro" onchange="calculate()">
+                        <label for="nearMetro">Near Metro/Transit (500m)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="furnished" onchange="calculate()">
+                        <label for="furnished">Fully Furnished</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="cornerPlot" onchange="calculate()">
+                        <label for="cornerPlot">Corner Plot / End Unit</label>
+                    </div>
+                </div>
+
+                <div class="input-row" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Facing Direction</label>
+                        <select id="facing" onchange="calculate()">
+                            <option value="east">East (Best)</option>
+                            <option value="north">North</option>
+                            <option value="west">West</option>
+                            <option value="south">South</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Maintenance (₹/month)</label>
+                        <input type="number" id="maintenance" value="3000" min="0" onchange="calculate()">
+                    </div>
+                </div>
+
+                <button class="btn-calculate" onclick="calculate()">🔄 Calculate Property Value</button>
+            </div>
+
+            <!-- Results Section -->
+            <div>
+                <div class="card">
+                    <div class="card-title">
+                        <span>💰</span> Estimated Property Value
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-title">Estimated Market Value</div>
+                        <div class="price-display">
+                            <div class="price-main" id="totalPrice">₹ 40,00,000</div>
+                            <div class="price-sub" id="priceInWords">Forty Lakhs</div>
+                        </div>
+
+                        <div class="breakdown-grid">
+                            <div class="breakdown-item">
+                                <div class="value" id="basePrice">₹ 40L</div>
+                                <div class="label">Base Price</div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="value" id="premium">+₹ 0</div>
+                                <div class="label">Premium/Discount</div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="value" id="perSqftPrice">₹ 5,000</div>
+                                <div class="label">Per Sq Ft</div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="value" id="rentYieldResult">3.5%</div>
+                                <div class="label">Rent Yield</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">
+                        <span>📊</span> Valuation Breakdown
+                    </div>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>Impact</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdownTable">
+                            <tr>
+                                <td>Base Area Value</td>
+                                <td><span class="tag tag-good">Positive</span></td>
+                                <td>₹ 40,00,000</td>
+                            </tr>
+                            <tr>
+                                <td>City Premium</td>
+                                <td><span class="tag tag-good">+20%</span></td>
+                                <td>+₹ 8,00,000</td>
+                            </tr>
+                            <tr>
+                                <td>Age Depreciation</td>
+                                <td><span class="tag tag-fair">-5%</span></td>
+                                <td>-₹ 2,00,000</td>
+                            </tr>
+                            <tr>
+                                <td>Floor Premium</td>
+                                <td><span class="tag tag-good">+5%</span></td>
+                                <td>+₹ 2,00,000</td>
+                            </tr>
+                            <tr>
+                                <td>Amenities</td>
+                                <td><span class="tag tag-good">+8%</span></td>
+                                <td>+₹ 3,20,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">
+                        <span>📈</span> Investment Metrics
+                    </div>
+
+                    <div class="breakdown-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <div class="breakdown-item" style="background: #f0f4ff;">
+                            <div class="value" style="color: #667eea;" id="emiEstimate">₹ 35,000</div>
+                            <div class="label" style="color: #666;">Est. EMI (20yr)</div>
+                        </div>
+                        <div class="breakdown-item" style="background: #f0fff4;">
+                            <div class="value" style="color: #28a745;" id="roiEstimate">8.5%</div>
+                            <div class="label" style="color: #666;">Est. ROI</div>
+                        </div>
+                        <div class="breakdown-item" style="background: #fff8f0;">
+                            <div class="value" style="color: #fd7e14;" id="paybackYears">15 yrs</div>
+                            <div class="label" style="color: #666;">Payback Period</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Number to words converter
+        function numberToWords(num) {
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+            if (num === 0) return 'Zero';
+
+            function convert(n) {
+                if (n < 10) return ones[n];
+                if (n < 20) return teens[n - 10];
+                if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+                if (n < 1000) return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convert(n % 100) : '');
+                if (n < 100000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 !== 0 ? ' ' + convert(n % 1000) : '');
+                if (n < 10000000) return convert(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 !== 0 ? ' ' + convert(n % 100000) : '');
+                return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 !== 0 ? ' ' + convert(n % 10000000) : '');
+            }
+
+            return convert(Math.floor(num));
+        }
+
+        function formatCurrency(num) {
+            if (num >= 10000000) {
+                return '₹ ' + (num / 10000000).toFixed(2) + ' Cr';
+            } else if (num >= 100000) {
+                return '₹ ' + (num / 100000).toFixed(2) + ' L';
+            } else {
+                return '₹ ' + num.toLocaleString('en-IN');
+            }
+        }
+
+        function switchMethod(method) {
+            document.querySelectorAll('.method-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.method-section').forEach(sec => sec.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(method + '-section').classList.add('active');
+            calculate();
+        }
+
+        function updateYield(val) {
+            document.getElementById('yieldDisplay').textContent = val + '%';
+            document.getElementById('rentYield').value = val;
+            calculate();
+        }
+
+        function calculate() {
+            // Get active method
+            const activeTab = document.querySelector('.method-tab.active');
+            const method = activeTab.textContent.includes('Area') ? 'area' : 
+                          activeTab.textContent.includes('Rent') ? 'rent' : 'combined';
+
+            let basePrice = 0;
+            let carpetArea = 0;
+            let monthlyRent = 0;
+
+            // Calculate base price based on method
+            if (method === 'area') {
+                carpetArea = parseFloat(document.getElementById('carpetArea').value) || 0;
+                const ratePerSqft = parseFloat(document.getElementById('ratePerSqft').value) || 0;
+                basePrice = carpetArea * ratePerSqft;
+            } else if (method === 'rent') {
+                monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
+                const annualRent = monthlyRent * 12;
+                const yield = parseFloat(document.getElementById('rentYield').value) || 3.5;
+                basePrice = (annualRent / yield) * 100;
+                carpetArea = 800; // default for display
+            } else {
+                carpetArea = parseFloat(document.getElementById('combCarpetArea').value) || 0;
+                monthlyRent = parseFloat(document.getElementById('combMonthlyRent').value) || 0;
+                const ratePerSqft = parseFloat(document.getElementById('combRatePerSqft').value) || 0;
+                const weight = parseInt(document.getElementById('weightMethod').value) || 70;
+
+                const areaPrice = carpetArea * ratePerSqft;
+                const annualRent = monthlyRent * 12;
+                const rentPrice = (annualRent / 3.5) * 100;
+
+                basePrice = (areaPrice * weight / 100) + (rentPrice * (100 - weight) / 100);
+            }
+
+            // Apply adjustment factors
+            let multiplier = 1.0;
+            let adjustments = [];
+
+            // City tier
+            const cityTier = document.getElementById('cityTier').value;
+            const cityMultipliers = { metro: 1.25, tier1: 1.15, tier2: 1.0, tier3: 0.85 };
+            const cityFactor = cityMultipliers[cityTier];
+            multiplier *= cityFactor;
+            adjustments.push({ name: 'City Premium', factor: cityFactor, type: cityFactor > 1 ? 'good' : 'fair' });
+
+            // Property age depreciation
+            const age = parseInt(document.getElementById('propertyAge').value) || 0;
+            const ageDepreciation = Math.min(age * 0.015, 0.5); // 1.5% per year, max 50%
+            const ageFactor = 1 - ageDepreciation;
+            multiplier *= ageFactor;
+            adjustments.push({ name: 'Age Depreciation', factor: ageFactor, type: ageDepreciation > 0.1 ? 'poor' : 'fair' });
+
+            // Floor premium
+            const totalFloors = parseInt(document.getElementById('totalFloors').value) || 10;
+            const yourFloor = parseInt(document.getElementById('yourFloor').value) || 0;
+            let floorFactor = 1.0;
+            if (yourFloor === 0) floorFactor = 0.95; // ground floor
+            else if (yourFloor >= totalFloors - 2) floorFactor = 1.08; // top floors
+            else if (yourFloor >= totalFloors / 2) floorFactor = 1.05; // upper half
+            else floorFactor = 1.0;
+            multiplier *= floorFactor;
+            adjustments.push({ name: 'Floor Premium', factor: floorFactor, type: floorFactor > 1 ? 'good' : (floorFactor < 1 ? 'poor' : 'fair') });
+
+            // Amenities
+            let amenitiesFactor = 1.0;
+            if (document.getElementById('hasLift').checked) amenitiesFactor += 0.05;
+            if (document.getElementById('hasParking').checked) amenitiesFactor += 0.04;
+            if (document.getElementById('hasSecurity').checked) amenitiesFactor += 0.03;
+            if (document.getElementById('nearMetro').checked) amenitiesFactor += 0.08;
+            if (document.getElementById('furnished').checked) amenitiesFactor += 0.06;
+            if (document.getElementById('cornerPlot').checked) amenitiesFactor += 0.05;
+            multiplier *= amenitiesFactor;
+            adjustments.push({ name: 'Amenities', factor: amenitiesFactor, type: 'good' });
+
+            // Facing
+            const facing = document.getElementById('facing').value;
+            const facingMultipliers = { east: 1.05, north: 1.03, west: 1.0, south: 0.98 };
+            const facingFactor = facingMultipliers[facing];
+            multiplier *= facingFactor;
+            adjustments.push({ name: 'Facing (' + facing.charAt(0).toUpperCase() + facing.slice(1) + ')', factor: facingFactor, type: facingFactor > 1 ? 'good' : (facingFactor < 1 ? 'poor' : 'fair') });
+
+            // Calculate final price
+            const finalPrice = Math.round(basePrice * multiplier);
+            const premiumAmount = finalPrice - basePrice;
+
+            // Update results
+            document.getElementById('totalPrice').textContent = formatCurrency(finalPrice);
+            document.getElementById('priceInWords').textContent = numberToWords(finalPrice) + ' Rupees';
+            document.getElementById('basePrice').textContent = formatCurrency(basePrice);
+            document.getElementById('premium').textContent = (premiumAmount >= 0 ? '+' : '') + formatCurrency(premiumAmount);
+            document.getElementById('perSqftPrice').textContent = '₹ ' + Math.round(finalPrice / (carpetArea || 1)).toLocaleString('en-IN');
+
+            // Rent yield calculation
+            const rentForYield = monthlyRent || (method === 'area' ? 25000 : 0);
+            const annualRentForYield = rentForYield * 12;
+            const calculatedYield = ((annualRentForYield / finalPrice) * 100).toFixed(2);
+            document.getElementById('rentYieldResult').textContent = calculatedYield + '%';
+
+            // Update breakdown table
+            const tbody = document.getElementById('breakdownTable');
+            tbody.innerHTML = '';
+
+            // Base value row
+            const baseRow = document.createElement('tr');
+            baseRow.innerHTML = `<td>Base Value (${method === 'rent' ? 'Rent Capitalization' : 'Area × Rate'})</td><td><span class="tag tag-good">Base</span></td><td>${formatCurrency(basePrice)}</td>`;
+            tbody.appendChild(baseRow);
+
+            adjustments.forEach(adj => {
+                const impact = ((adj.factor - 1) * 100).toFixed(1);
+                const amount = Math.round(basePrice * (adj.factor - 1) * (multiplier / adj.factor));
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${adj.name}</td><td><span class="tag tag-${adj.type}">${impact > 0 ? '+' : ''}${impact}%</span></td><td>${amount >= 0 ? '+' : ''}${formatCurrency(Math.abs(amount))}</td>`;
+                tbody.appendChild(row);
+            });
+
+            // Total row
+            const totalRow = document.createElement('tr');
+            totalRow.style.fontWeight = 'bold';
+            totalRow.style.background = '#f8f9fa';
+            totalRow.innerHTML = `<td>Final Estimated Value</td><td><span class="tag tag-good">Total</span></td><td>${formatCurrency(finalPrice)}</td>`;
+            tbody.appendChild(totalRow);
+
+            // Investment metrics
+            const loanAmount = finalPrice * 0.8; // 80% loan
+            const interestRate = 8.5; // 8.5% annual
+            const tenureYears = 20;
+            const monthlyRate = interestRate / 12 / 100;
+            const numPayments = tenureYears * 12;
+            const emi = Math.round(loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments) / (Math.pow(1 + monthlyRate, numPayments) - 1));
+
+            document.getElementById('emiEstimate').textContent = '₹ ' + emi.toLocaleString('en-IN');
+            document.getElementById('roiEstimate').textContent = calculatedYield + '%';
+
+            // Payback period (simple approximation)
+            const annualAppreciation = 0.06; // 6% annual appreciation
+            let paybackYears = 0;
+            let accumulatedValue = 0;
+            let currentPrice = finalPrice;
+            while (accumulatedValue < finalPrice && paybackYears < 50) {
+                currentPrice *= (1 + annualAppreciation);
+                accumulatedValue += (annualRentForYield * 0.7); // 70% of rent after expenses
+                paybackYears++;
+            }
+            document.getElementById('paybackYears').textContent = paybackYears + ' yrs';
+        }
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
