@@ -350,7 +350,7 @@
                     <div class="input-row">
                         <div class="input-group">
                             <label>Carpet Area (sq ft)</label>
-                            <input type="number" id="carpetArea" value="800" min="100" onchange="calculate()">
+                            <input type="number" id="carpetArea" value="700" min="100" onchange="calculate()">
                         </div>
                         <div class="input-group">
                             <label>Rate per sq ft</label>
@@ -375,17 +375,17 @@
                     <div class="input-row">
                         <div class="input-group">
                             <label>Monthly Rent (₹)</label>
-                            <input type="number" id="monthlyRent" value="25000" min="1000" onchange="calculate()">
+                            <input type="number" id="monthlyRent" value="20000" min="1000" onchange="calculate()">
                         </div>
                         <div class="input-group">
                             <label>Annual Rent Yield (%)</label>
-                            <input type="number" id="rentYield" value="3.5" min="0.5" max="15" step="0.1" onchange="calculate()">
+                            <input type="number" id="rentYield" value="5.8" min="0.5" max="15" step="0.1" onchange="calculate()">
                         </div>
                     </div>
 
                     <div class="slider-container">
-                        <label>Market Rent Yield: <span id="yieldDisplay">3.5%</span></label>
-                        <input type="range" id="yieldSlider" min="1" max="10" value="3.5" step="0.1" oninput="updateYield(this.value)">
+                        <label>Market Rent Yield: <span id="yieldDisplay">5.8%</span></label>
+                        <input type="range" id="yieldSlider" min="1" max="10" value="5.8" step="0.1" oninput="updateYield(this.value)">
                     </div>
                 </div>
 
@@ -394,11 +394,11 @@
                     <div class="input-row">
                         <div class="input-group">
                             <label>Carpet Area (sq ft)</label>
-                            <input type="number" id="combCarpetArea" value="800" min="100" onchange="calculate()">
+                            <input type="number" id="combCarpetArea" value="700" min="100" onchange="calculate()">
                         </div>
                         <div class="input-group">
                             <label>Monthly Rent (₹)</label>
-                            <input type="number" id="combMonthlyRent" value="25000" min="1000" onchange="calculate()">
+                            <input type="number" id="combMonthlyRent" value="20000" min="1000" onchange="calculate()">
                         </div>
                     </div>
 
@@ -412,8 +412,8 @@
                             <select id="weightMethod" onchange="calculate()">
                                 <option value="50">50% Area / 50% Rent</option>
                                 <option value="60">60% Area / 40% Rent</option>
-                                <option value="70" selected>70% Area / 30% Rent</option>
-                                <option value="80">80% Area / 20% Rent</option>
+                                <option value="70">70% Area / 30% Rent</option>
+                                <option value="80" selected>80% Area / 20% Rent</option>
                             </select>
                         </div>
                     </div>
@@ -662,18 +662,18 @@
             if (method === 'area') {
                 carpetArea = parseFloat(document.getElementById('carpetArea').value) || 0;
                 const ratePerSqft = parseFloat(document.getElementById('ratePerSqft').value) || 0;
-                basePrice = carpetArea * ratePerSqft;
+                basePrice = carpetArea * ratePerSqft * (carpetArea * 8.5/ rateperSqft);
             } else if (method === 'rent') {
                 monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
                 const annualRent = monthlyRent * 12;
                 const yield = parseFloat(document.getElementById('rentYield').value) || 3.5;
                 basePrice = (annualRent / yield) * 100;
-                carpetArea = 800; // default for display
+                carpetArea = 700; // default for display
             } else {
                 carpetArea = parseFloat(document.getElementById('combCarpetArea').value) || 0;
                 monthlyRent = parseFloat(document.getElementById('combMonthlyRent').value) || 0;
                 const ratePerSqft = parseFloat(document.getElementById('combRatePerSqft').value) || 0;
-                const weight = parseInt(document.getElementById('weightMethod').value) || 70;
+                const weight = parseInt(document.getElementById('weightMethod').value) || 80;
 
                 const areaPrice = carpetArea * ratePerSqft;
                 const annualRent = monthlyRent * 12;
