@@ -224,7 +224,7 @@
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            table-layout: auto; /* Dynamic auto balancing */
+            table-layout: auto;
         }
 
         th, td {
@@ -262,7 +262,6 @@
 
         /* --- STABLE RESPONSIVE ENGINE --- */
         
-        /* Tablets (up to 1024px) */
         @media (max-width: 1024px) {
             body {
                 padding: 24px 16px;
@@ -277,7 +276,6 @@
             }
         }
 
-        /* Mobile Adjustments (Explicitly retaining traditional table styling) */
         @media (max-width: 600px) {
             body {
                 padding: 12px 6px;
@@ -317,7 +315,7 @@
                 padding-top: 8px;
             }
             
-            /* --- Strict Table Layout Reductions --- */
+            /* Tight Mobile Packing for Traditional Tables */
             .table-container {
                 padding: 10px 6px;
             }
@@ -327,8 +325,8 @@
                 text-align: center;
             }
             th, td {
-                padding: 8px 4px; /* Stripped padding down to maximize inline space */
-                font-size: 0.72rem; /* Clean micro typography */
+                padding: 8px 4px;
+                font-size: 0.72rem;
                 letter-spacing: 0;
             }
             th {
@@ -386,7 +384,7 @@
             <!-- Compound Option -->
             <div class="input-group" id="frequency-group" style="display: none;">
                 <label style="margin-bottom: 8px; display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Compounding Frequency</label>
-                <select id="comp-frequency" onchange="calculate()">
+                <select id="comp-frequency" onchange="syncQueryParamsAndCalculate()">
                     <option value="12">Monthly</option>
                     <option value="4" selected>Quarterly (Standard)</option>
                     <option value="2">Half-Yearly</option>
@@ -438,17 +436,71 @@
     <script>
         let currentMode = 'simple';
 
+        // Load parameter state right before DOM hydration starts
+        function parseURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            
+            if (params.has('m')) {
+                currentMode = params.get('m') === 'compound' ? 'compound' : 'simple';
+            }
+            if (params.has('p')) {
+                const pVal = params.get('p');
+                document.getElementById('num-principal').value = pVal;
+                document.getElementById('range-principal').value = pVal;
+            }
+            if (params.has('r')) {
+                const rVal = params.get('r');
+                document.getElementById('num-rate').value = rVal;
+                document.getElementById('range-rate').value = rVal;
+            }
+            if (params.has('t')) {
+                const tVal = params.get('t');
+                document.getElementById('num-time').value = tVal;
+                document.getElementById('range-time').value = tVal;
+            }
+            if (params.has('f')) {
+                document.getElementById('comp-frequency').value = params.get('f');
+            }
+
+            // Sync visual active tab look
+            document.getElementById('tab-simple').classList.toggle('active', currentMode === 'simple');
+            document.getElementById('tab-compound').classList.toggle('active', currentMode === 'compound');
+            document.getElementById('frequency-group').style.display = currentMode === 'compound' ? 'block' : 'none';
+        }
+
         function switchCalcMode(mode) {
             currentMode = mode;
             document.getElementById('tab-simple').classList.toggle('active', mode === 'simple');
             document.getElementById('tab-compound').classList.toggle('active', mode === 'compound');
             document.getElementById('frequency-group').style.display = mode === 'compound' ? 'block' : 'none';
-            calculate();
+            syncQueryParamsAndCalculate();
         }
 
         function syncInputs(type, val) {
             document.getElementById(`num-${type}`).value = val;
             document.getElementById(`range-${type}`).value = val;
+            syncQueryParamsAndCalculate();
+        }
+
+        function syncQueryParamsAndCalculate() {
+            const p = document.getElementById('num-principal').value;
+            const r = document.getElementById('num-rate').value;
+            const t = document.getElementById('num-time').value;
+            const f = document.getElementById('comp-frequency').value;
+
+            // Generate search param structure cleanly without layout flickers
+            const params = new URLSearchParams();
+            params.set('p', p);
+            params.set('r', r);
+            params.set('t', t);
+            params.set('m', currentMode);
+            if (currentMode === 'compound') {
+                params.set('f', f);
+            }
+
+            const newURL = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({ path: newURL }, '', newURL);
+
             calculate();
         }
 
@@ -512,7 +564,11 @@
             document.getElementById('breakdown-body').innerHTML = tableHTML;
         }
 
-        window.onload = calculate;
+        // Initialize state engine on view trigger
+        window.onload = function() {
+            parseURLParams();
+            calculate();
+        };
     </script>
 </body>
 </html>
