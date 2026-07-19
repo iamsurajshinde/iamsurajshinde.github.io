@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Premium Interactive FD Calculator</title>
     <style>
         :root {
@@ -45,7 +45,7 @@
             padding: 32px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.1fr 0.9fr;
             gap: 32px;
             align-items: start;
         }
@@ -54,7 +54,6 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: 100%;
         }
 
         h1 {
@@ -104,6 +103,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            gap: 10px;
         }
 
         .input-group label {
@@ -192,7 +192,7 @@
             padding-top: 12px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--accent);
         }
 
@@ -205,14 +205,11 @@
             border: 1px solid var(--glass-border);
             border-radius: 16px;
             padding: 20px;
-            /* display: flex; */
-            flex-direction: column;
         }
 
         .table-wrapper-scroller {
-            max-height: 520px;
-            overflow-y: scroll;
-            overflow-x: scroll; /* Secure side-scroll window layer for dynamic mobile scaling */
+            max-height: 540px;
+            overflow-y: auto;
             width: 100%;
         }
 
@@ -230,7 +227,7 @@
         }
 
         th, td {
-            padding: 12px 10px;
+            padding: 14px 10px;
             font-size: 0.9rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -254,7 +251,6 @@
         /* Webkit Scrollbars Custom Style */
         .table-wrapper-scroller::-webkit-scrollbar {
             width: 6px;
-            height: 6px;
         }
         .table-wrapper-scroller::-webkit-scrollbar-track {
             background: transparent;
@@ -264,15 +260,15 @@
             border-radius: 3px;
         }
 
-        /* --- ADVANCED RESPONSIVE FIXES --- */
+        /* --- STABLE RESPONSIVE ENGINE --- */
         
-        /* Tablets & iPads (up to 1024px) */
+        /* Tablets (Landscape & Portrait) up to 1024px */
         @media (max-width: 1024px) {
             body {
                 padding: 24px 16px;
             }
             .calculator-container {
-                grid-template-columns: 1fr; /* Switch structural components to full width stack */
+                grid-template-columns: 1fr;
                 gap: 32px;
                 padding: 24px;
             }
@@ -281,16 +277,17 @@
             }
         }
 
-        /* Mobile Viewports (Phones under 600px) */
-        @media (max-width: 600px) {
+        /* Mobile Layout Transformation (Screens under 650px) */
+        @media (max-width: 650px) {
             body {
-                padding: 12px 8px;
-                align-items: flex-start; /* Prevents center cropping if keyboard opens */
+                padding: 8px 4px;
+                align-items: flex-start;
             }
             .calculator-container {
-                padding: 16px;
+                padding: 16px 12px;
                 border-radius: 16px;
                 gap: 24px;
+                border: none;
             }
             h1 {
                 font-size: 1.4rem;
@@ -311,29 +308,77 @@
                 font-size: 0.75rem;
             }
             .numeric-input {
-                width: 90px;
+                width: 95px;
                 padding: 6px 8px;
                 font-size: 0.85rem;
             }
             .result-panel {
                 padding: 16px;
-                margin-top: 12px;
+                margin-top: 8px;
             }
             .result-row {
                 font-size: 0.85rem;
                 margin-bottom: 10px;
             }
             .result-row:last-child {
-                font-size: 1.05rem;
+                font-size: 1.15rem;
                 padding-top: 10px;
             }
             .table-container {
-                padding: 14px;
-                overflow: auto;
+                padding: 12px;
             }
-            th, td {
-                padding: 10px 6px;
-                font-size: 0.8rem;
+            
+            /* UI Flip: Convert wide table format into vertical data cards */
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+            
+            thead {
+                display: none; /* Hide header rows safely */
+            }
+            
+            tr {
+                margin-bottom: 12px;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 12px;
+            }
+
+            tr:last-child {
+                margin-bottom: 0;
+            }
+
+            td {
+                text-align: right;
+                padding: 6px 0;
+                font-size: 0.85rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            td:last-child {
+                border-bottom: none;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            /* Create data titles using modern CSS injection markers */
+            td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 500;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 0.5px;
+            }
+            
+            td.text-right {
+                text-align: right;
             }
         }
     </style>
@@ -358,7 +403,7 @@
                     <input type="number" id="num-principal" class="numeric-input" min="500" max="1000000" value="10000" oninput="syncInputs('principal', this.value)">
                 </div>
                 <div class="slider-wrapper">
-                    <input type="range" id="range-principal" min="500" max="10000000" step="500" value="10000" oninput="syncInputs('principal', this.value)">
+                    <input type="range" id="range-principal" min="500" max="100000" step="500" value="10000" oninput="syncInputs('principal', this.value)">
                 </div>
             </div>
 
@@ -395,7 +440,7 @@
                 </select>
             </div>
 
-            <!-- Total panel below fields -->
+            <!-- Total display panel -->
             <div class="result-panel">
                 <div class="result-row">
                     <span class="result-label">Invested Amount:</span>
@@ -412,7 +457,7 @@
             </div>
         </div>
 
-        <!-- Right Side: Year-by-Year Breakdown Table -->
+        <!-- Right Side: Year-by-Year Breakdown Table / Stacked Cards -->
         <div class="right-panel">
             <div class="table-container">
                 <div class="table-title">Yearly Growth Breakdown</div>
@@ -478,10 +523,10 @@
                     let closingBalance = openingBalance + yearlyInterestFixed;
                     tableHTML += `
                         <tr>
-                            <td>Year ${year}</td>
-                            <td class="text-right">${formatCurrency(openingBalance)}</td>
-                            <td class="text-right">${formatCurrency(yearlyInterestFixed)}</td>
-                            <td class="text-right">${formatCurrency(closingBalance)}</td>
+                            <td data-label="Timeline">Year ${year}</td>
+                            <td data-label="Opening Bal." class="text-right">${formatCurrency(openingBalance)}</td>
+                            <td data-label="Interest" class="text-right">${formatCurrency(yearlyInterestFixed)}</td>
+                            <td data-label="Closing Bal." class="text-right">${formatCurrency(closingBalance)}</td>
                         </tr>
                     `;
                     openingBalance = closingBalance;
@@ -495,10 +540,10 @@
                     
                     tableHTML += `
                         <tr>
-                            <td>Year ${year}</td>
-                            <td class="text-right">${formatCurrency(openingBalance)}</td>
-                            <td class="text-right">${formatCurrency(interestEarnedThisYear)}</td>
-                            <td class="text-right">${formatCurrency(closingBalance)}</td>
+                            <td data-label="Timeline">Year ${year}</td>
+                            <td data-label="Opening Bal." class="text-right">${formatCurrency(openingBalance)}</td>
+                            <td data-label="Interest" class="text-right">${formatCurrency(interestEarnedThisYear)}</td>
+                            <td data-label="Closing Bal." class="text-right">${formatCurrency(closingBalance)}</td>
                         </tr>
                     `;
                     openingBalance = closingBalance;
