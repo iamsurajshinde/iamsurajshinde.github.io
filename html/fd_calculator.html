@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Interactive FD Calculator</title>
     <style>
         :root {
@@ -224,6 +224,7 @@
             width: 100%;
             border-collapse: collapse;
             text-align: left;
+            table-layout: auto; /* Dynamic auto balancing */
         }
 
         th, td {
@@ -248,7 +249,6 @@
             text-align: right;
         }
 
-        /* Webkit Scrollbars Custom Style */
         .table-wrapper-scroller::-webkit-scrollbar {
             width: 6px;
         }
@@ -262,7 +262,7 @@
 
         /* --- STABLE RESPONSIVE ENGINE --- */
         
-        /* Tablets (Landscape & Portrait) up to 1024px */
+        /* Tablets (up to 1024px) */
         @media (max-width: 1024px) {
             body {
                 padding: 24px 16px;
@@ -277,108 +277,62 @@
             }
         }
 
-        /* Mobile Layout Transformation (Screens under 650px) */
-        @media (max-width: 650px) {
+        /* Mobile Adjustments (Explicitly retaining traditional table styling) */
+        @media (max-width: 600px) {
             body {
-                padding: 8px 4px;
+                padding: 12px 6px;
                 align-items: flex-start;
             }
             .calculator-container {
-                padding: 16px 12px;
+                padding: 16px 10px;
                 border-radius: 16px;
-                gap: 24px;
-                border: none;
+                gap: 20px;
             }
             h1 {
-                font-size: 1.4rem;
+                font-size: 1.35rem;
                 margin-bottom: 16px;
                 text-align: center;
             }
             .tabs {
-                margin-bottom: 20px;
+                margin-bottom: 16px;
             }
             .tab-btn {
-                padding: 12px 4px;
-                font-size: 0.85rem;
-            }
-            .label-container {
-                margin-bottom: 6px;
-            }
-            .input-group label {
-                font-size: 0.75rem;
+                padding: 10px 4px;
+                font-size: 0.8rem;
             }
             .numeric-input {
-                width: 95px;
-                padding: 6px 8px;
-                font-size: 0.85rem;
+                width: 85px;
+                padding: 6px;
+                font-size: 0.8rem;
             }
             .result-panel {
-                padding: 16px;
-                margin-top: 8px;
+                padding: 12px;
             }
             .result-row {
-                font-size: 0.85rem;
-                margin-bottom: 10px;
+                font-size: 0.8rem;
+                margin-bottom: 8px;
             }
             .result-row:last-child {
-                font-size: 1.15rem;
-                padding-top: 10px;
+                font-size: 1.05rem;
+                padding-top: 8px;
             }
+            
+            /* --- Strict Table Layout Reductions --- */
             .table-container {
-                padding: 12px;
+                padding: 10px 6px;
             }
-            
-            /* UI Flip: Convert wide table format into vertical data cards */
-            table, thead, tbody, th, td, tr {
-                display: block;
-                width: 100%;
+            .table-title {
+                font-size: 0.95rem;
+                margin-bottom: 10px;
+                text-align: center;
             }
-            
-            thead {
-                display: none; /* Hide header rows safely */
+            th, td {
+                padding: 8px 4px; /* Stripped padding down to maximize inline space */
+                font-size: 0.72rem; /* Clean micro typography */
+                letter-spacing: 0;
             }
-            
-            tr {
-                margin-bottom: 12px;
-                background: rgba(255, 255, 255, 0.02);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                border-radius: 12px;
-                padding: 12px;
-            }
-
-            tr:last-child {
-                margin-bottom: 0;
-            }
-
-            td {
-                text-align: right;
-                padding: 6px 0;
-                font-size: 0.85rem;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            td:last-child {
-                border-bottom: none;
-                font-weight: 600;
-                color: #fff;
-            }
-
-            /* Create data titles using modern CSS injection markers */
-            td::before {
-                content: attr(data-label);
-                float: left;
-                font-weight: 500;
-                color: var(--text-muted);
-                text-transform: uppercase;
-                font-size: 0.75rem;
-                letter-spacing: 0.5px;
-            }
-            
-            td.text-right {
-                text-align: right;
+            th {
+                font-size: 0.68rem;
             }
         }
     </style>
@@ -457,7 +411,7 @@
             </div>
         </div>
 
-        <!-- Right Side: Year-by-Year Breakdown Table / Stacked Cards -->
+        <!-- Right Side: Year-by-Year Breakdown Table -->
         <div class="right-panel">
             <div class="table-container">
                 <div class="table-title">Yearly Growth Breakdown</div>
@@ -466,9 +420,9 @@
                         <thead>
                             <tr>
                                 <th>Year</th>
-                                <th class="text-right">Opening Bal.</th>
-                                <th class="text-right">Interest Earned</th>
-                                <th class="text-right">Closing Bal.</th>
+                                <th class="text-right">Opening</th>
+                                <th class="text-right">Interest</th>
+                                <th class="text-right">Closing</th>
                             </tr>
                         </thead>
                         <tbody id="breakdown-body">
@@ -499,7 +453,7 @@
         }
 
         function formatCurrency(val) {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
         }
 
         function calculate() {
@@ -523,10 +477,10 @@
                     let closingBalance = openingBalance + yearlyInterestFixed;
                     tableHTML += `
                         <tr>
-                            <td data-label="Timeline">Year ${year}</td>
-                            <td data-label="Opening Bal." class="text-right">${formatCurrency(openingBalance)}</td>
-                            <td data-label="Interest" class="text-right">${formatCurrency(yearlyInterestFixed)}</td>
-                            <td data-label="Closing Bal." class="text-right">${formatCurrency(closingBalance)}</td>
+                            <td>Yr ${year}</td>
+                            <td class="text-right">${formatCurrency(openingBalance)}</td>
+                            <td class="text-right">${formatCurrency(yearlyInterestFixed)}</td>
+                            <td class="text-right">${formatCurrency(closingBalance)}</td>
                         </tr>
                     `;
                     openingBalance = closingBalance;
@@ -540,10 +494,10 @@
                     
                     tableHTML += `
                         <tr>
-                            <td data-label="Timeline">Year ${year}</td>
-                            <td data-label="Opening Bal." class="text-right">${formatCurrency(openingBalance)}</td>
-                            <td data-label="Interest" class="text-right">${formatCurrency(interestEarnedThisYear)}</td>
-                            <td data-label="Closing Bal." class="text-right">${formatCurrency(closingBalance)}</td>
+                            <td>Yr ${year}</td>
+                            <td class="text-right">${formatCurrency(openingBalance)}</td>
+                            <td class="text-right">${formatCurrency(interestEarnedThisYear)}</td>
+                            <td class="text-right">${formatCurrency(closingBalance)}</td>
                         </tr>
                     `;
                     openingBalance = closingBalance;
