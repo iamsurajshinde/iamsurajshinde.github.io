@@ -21,6 +21,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -40,23 +41,20 @@
             border: 1px solid var(--glass-border);
             border-radius: 24px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
             padding: 32px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 32px;
-        }
-
-        @media (max-width: 768px) {
-            .calculator-container {
-                grid-template-columns: 1fr;
-            }
+            align-items: start;
         }
 
         .left-panel, .right-panel {
             display: flex;
             flex-direction: column;
+            width: 100%;
+            height: 100%;
         }
 
         h1 {
@@ -82,12 +80,13 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 12px;
+            padding: 14px 12px;
             font-size: 0.95rem;
             font-weight: 500;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .tab-btn.active {
@@ -104,7 +103,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .input-group label {
@@ -118,10 +117,10 @@
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--glass-border);
             border-radius: 8px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             color: #fff;
             font-size: 0.95rem;
-            width: 100px;
+            width: 120px;
             text-align: right;
             outline: none;
         }
@@ -133,14 +132,15 @@
         .slider-wrapper {
             display: flex;
             align-items: center;
+            padding: 8px 0;
         }
 
         .slider-wrapper input[type="range"] {
             flex: 1;
             -webkit-appearance: none;
             width: 100%;
-            height: 6px;
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 4px;
             background: rgba(255, 255, 255, 0.1);
             outline: none;
         }
@@ -148,16 +148,12 @@
         .slider-wrapper input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: var(--primary);
             cursor: pointer;
             transition: transform 0.1s;
-        }
-
-        .slider-wrapper input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
         }
 
         select {
@@ -165,7 +161,7 @@
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 12px 16px;
+            padding: 14px 16px;
             color: #fff;
             font-size: 1rem;
             outline: none;
@@ -177,7 +173,7 @@
         }
 
         .result-panel {
-            margin-top: auto;
+            margin-top: 12px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
@@ -204,15 +200,20 @@
             color: var(--text-muted);
         }
 
-        /* Right Panel Table Style */
         .table-container {
             background: rgba(0, 0, 0, 0.15);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
-            flex: 1;
-            overflow-y: auto;
+            padding: 20px;
+            /* display: flex; */
+            flex-direction: column;
+        }
+
+        .table-wrapper-scroller {
             max-height: 520px;
-            padding: 16px;
+            overflow-y: scroll;
+            overflow-x: scroll; /* Secure side-scroll window layer for dynamic mobile scaling */
+            width: 100%;
         }
 
         .table-title {
@@ -229,7 +230,7 @@
         }
 
         th, td {
-            padding: 12px 8px;
+            padding: 12px 10px;
             font-size: 0.9rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -250,16 +251,90 @@
             text-align: right;
         }
 
-        /* Custom Scrollbar */
-        .table-container::-webkit-scrollbar {
+        /* Webkit Scrollbars Custom Style */
+        .table-wrapper-scroller::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
-        .table-container::-webkit-scrollbar-track {
+        .table-wrapper-scroller::-webkit-scrollbar-track {
             background: transparent;
         }
-        .table-container::-webkit-scrollbar-thumb {
+        .table-wrapper-scroller::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
+        }
+
+        /* --- ADVANCED RESPONSIVE FIXES --- */
+        
+        /* Tablets & iPads (up to 1024px) */
+        @media (max-width: 1024px) {
+            body {
+                padding: 24px 16px;
+            }
+            .calculator-container {
+                grid-template-columns: 1fr; /* Switch structural components to full width stack */
+                gap: 32px;
+                padding: 24px;
+            }
+            .table-wrapper-scroller {
+                max-height: 400px;
+            }
+        }
+
+        /* Mobile Viewports (Phones under 600px) */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px 8px;
+                align-items: flex-start; /* Prevents center cropping if keyboard opens */
+            }
+            .calculator-container {
+                padding: 16px;
+                border-radius: 16px;
+                gap: 24px;
+            }
+            h1 {
+                font-size: 1.4rem;
+                margin-bottom: 16px;
+                text-align: center;
+            }
+            .tabs {
+                margin-bottom: 20px;
+            }
+            .tab-btn {
+                padding: 12px 4px;
+                font-size: 0.85rem;
+            }
+            .label-container {
+                margin-bottom: 6px;
+            }
+            .input-group label {
+                font-size: 0.75rem;
+            }
+            .numeric-input {
+                width: 90px;
+                padding: 6px 8px;
+                font-size: 0.85rem;
+            }
+            .result-panel {
+                padding: 16px;
+                margin-top: 12px;
+            }
+            .result-row {
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+            .result-row:last-child {
+                font-size: 1.05rem;
+                padding-top: 10px;
+            }
+            .table-container {
+                padding: 14px;
+                overflow: auto;
+            }
+            th, td {
+                padding: 10px 6px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -283,7 +358,7 @@
                     <input type="number" id="num-principal" class="numeric-input" min="500" max="1000000" value="10000" oninput="syncInputs('principal', this.value)">
                 </div>
                 <div class="slider-wrapper">
-                    <input type="range" id="range-principal" min="500" max="100000" step="500" value="10000" oninput="syncInputs('principal', this.value)">
+                    <input type="range" id="range-principal" min="500" max="10000000" step="500" value="10000" oninput="syncInputs('principal', this.value)">
                 </div>
             </div>
 
@@ -291,10 +366,10 @@
             <div class="input-group">
                 <div class="label-container">
                     <label for="range-rate">Rate of Interest (% p.a.)</label>
-                    <input type="number" id="num-rate" class="numeric-input" min="1" max="20" step="0.1" value="6.5" oninput="syncInputs('rate', this.value)">
+                    <input type="number" id="num-rate" class="numeric-input" min="0.5" max="20" step="0.5" value="6.5" oninput="syncInputs('rate', this.value)">
                 </div>
                 <div class="slider-wrapper">
-                    <input type="range" id="range-rate" min="1" max="20" step="0.1" value="6.5" oninput="syncInputs('rate', this.value)">
+                    <input type="range" id="range-rate" min="0.5" max="20" step="0.5" value="6.5" oninput="syncInputs('rate', this.value)">
                 </div>
             </div>
 
@@ -309,9 +384,9 @@
                 </div>
             </div>
 
-            <!-- Compound Option (Hidden natively during simple view) -->
+            <!-- Compound Option -->
             <div class="input-group" id="frequency-group" style="display: none;">
-                <label style="margin-bottom: 8px; display: block;">Compounding Frequency</label>
+                <label style="margin-bottom: 8px; display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Compounding Frequency</label>
                 <select id="comp-frequency" onchange="calculate()">
                     <option value="12">Monthly</option>
                     <option value="4" selected>Quarterly (Standard)</option>
@@ -320,7 +395,7 @@
                 </select>
             </div>
 
-            <!-- Total display underneath fields -->
+            <!-- Total panel below fields -->
             <div class="result-panel">
                 <div class="result-row">
                     <span class="result-label">Invested Amount:</span>
@@ -341,19 +416,21 @@
         <div class="right-panel">
             <div class="table-container">
                 <div class="table-title">Yearly Growth Breakdown</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Year</th>
-                            <th class="text-right">Opening Balance</th>
-                            <th class="text-right">Interest Earned</th>
-                            <th class="text-right">Closing Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="breakdown-body">
-                        <!-- Populated Dynamically -->
-                    </tbody>
-                </table>
+                <div class="table-wrapper-scroller">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th class="text-right">Opening Bal.</th>
+                                <th class="text-right">Interest Earned</th>
+                                <th class="text-right">Closing Bal.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdown-body">
+                            <!-- Populated Dynamically -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -393,7 +470,6 @@
             let openingBalance = P;
 
             if (currentMode === 'simple') {
-                // Simple Interest Calculation
                 const yearlyInterestFixed = (P * R) / 100;
                 totalInterest = yearlyInterestFixed * T;
                 finalMaturity = P + totalInterest;
@@ -411,11 +487,9 @@
                     openingBalance = closingBalance;
                 }
             } else {
-                // Compound Interest Calculation
                 const r = R / 100;
                 
                 for (let year = 1; year <= T; year++) {
-                    // Calculate value at the end of this particular year using classic compound formula
                     let closingBalance = P * Math.pow((1 + (r / N)), (N * year));
                     let interestEarnedThisYear = closingBalance - openingBalance;
                     
@@ -433,16 +507,12 @@
                 totalInterest = finalMaturity - P;
             }
 
-            // Update main dashboard totals
             document.getElementById('res-invested').innerText = formatCurrency(P);
             document.getElementById('res-interest').innerText = formatCurrency(totalInterest);
             document.getElementById('res-total').innerText = formatCurrency(finalMaturity);
-
-            // Re-render schedule window table
             document.getElementById('breakdown-body').innerHTML = tableHTML;
         }
 
-        // Initialize display calculations on layout mount
         window.onload = calculate;
     </script>
 </body>
